@@ -1,0 +1,13 @@
+{
+    "name": "admin",
+    "version": "0.0.1",
+    "main": "server.js",
+    "dependencies": {
+        "express": "latest",
+        "mongoose": "latest",
+        "cookie-parser": "latest",
+        "express-session": "latest",
+        "body-parser": "latest",
+        "morgan": "latest"
+    }
+}
