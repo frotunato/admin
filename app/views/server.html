@@ -1,14 +1,42 @@
 <tabset>
 	<tab heading="General">
-		Status: {{server.status}}
-		Players: 0/0
-		Server ip: {{server.ip}}
+		<p>
+			<div ng-switch="serverStatus">
+				<button class="btn btn-danger" ng-click="$parent.startServer()">start</button>
+
+				<!-- START SERVER -->
+				<div ng-switch-when="Offline">
+					<button class="btn btn-danger" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.startServer()"></button>
+				</div>
+				
+				<!-- LOADING SERVER -->
+				<div ng-switch-when="Loading">
+					<button class="btn btn-warning" ng-bind="$parent.serverStatus" ng-disabled="$parent.serverStatus === 'Loading'"></button>
+				</div>
+
+				<!-- STOP SERVER -->
+				<div ng-switch-when="Online">
+					<button class="btn btn-success" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.stopServer()"></button>
+				</div>
+			
+			</div>
+		</p>
 	</tab>
+	
 	<tab heading="Chat">
-		CHAT CONTAINER WITH SOCKET.IO
+		<p>
+			<div id="chatLinesContainer"></div>	
+			<form ng-submit="submit()" action="">
+				<input type="text" ng-model="$parent.command">
+				<button class="btn btn-default">Send</button>
+				<button class="btn btn-primary" ng-click="startChat()">Start chat</button>
+				<button class="btn btn-danger" ng-click="stopChat()">Stop chat</button>
+			</form>
+		</p>
 	</tab>
+	
 	<tab heading="Options">
-		MULTIPLE OPTIONS
+	
 	</tab>
 </tabset>
-{{routeParams}}
+

@@ -1,7 +1,7 @@
 angular.module('adminApp.serverNavBar', ['ngRoute'])
-	.controller('serverNavBarCtrl', function ($scope, $location, serversInfo) {
+	.controller('serverNavBarCtrl', function ($scope, $location, serversInfo, $routeParams) {
 		$scope.serverList = [];
-		$scope.selectedOption = 'overview';
+		$scope.selectedOption = $routeParams;
 		$scope.load = function (path) {
 			$location.path('/server/' + path);
 		}
@@ -11,7 +11,6 @@ angular.module('adminApp.serverNavBar', ['ngRoute'])
 			});
 		};
 		refreshServerList();
-		console.log(Date.now())
 	})
 
 	.factory('serversInfo', function ($http, $q) {

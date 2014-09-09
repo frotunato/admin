@@ -1,4 +1,4 @@
-var app = angular.module('adminApp', ['ngRoute', 'adminApp.overview', 'adminApp.serverNavBar', 'adminApp.server', 'ui.bootstrap'])
+var app = angular.module('adminApp', ['ngRoute', 'adminApp.overview', 'adminApp.serverNavBar', 'adminApp.server', 'adminApp.socket', 'ui.bootstrap'])
 	
 	.config(function ($routeProvider) {
 		$routeProvider

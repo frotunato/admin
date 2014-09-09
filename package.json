@@ -8,6 +8,7 @@
         "cookie-parser": "latest",
         "express-session": "latest",
         "body-parser": "latest",
-        "morgan": "latest"
+        "morgan": "latest",
+        "socket.io": "latest"
     }
 }

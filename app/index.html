@@ -1,20 +1,21 @@
 <html ng-app="adminApp">
 	<head>
 		<link rel="stylesheet" href="styles/bootstrap.min.css">
+		<script src="js/vendor/socket.io.js"></script>
 		<script src="js/vendor/angular.js"></script>
 		<script src="js/vendor/angular-route.js"></script>
 		<script src="js/vendor/ui-bootstrap-tpls.js"></script>
 		<script src="app.js"></script>
+		<script src="js/modules/serverNavBar.js"></script>
+		<script src="js/modules/socket.js"></script>
 		<script src="js/modules/server.js"></script>
 		<script src="js/modules/overview.js"></script>
-		<script src="js/modules/serverNavBar.js"></script>
 	</head>
 	<body>
-	<div ng-view></div>
-		<div class="btn-group-vertical" ng-controller="serverNavBarCtrl">
+	<div ng-view style="position:absolute;margin-left:140px;"></div>
+		<div class="btn-group-vertical" ng-controller="serverNavBarCtrl" <tabset style="position:absolute;margin-top:40px;">
 			<label class="btn btn-default" ng-change="load(selectedOption)" ng-model="selectedOption" btn-radio="'overview'">overview</label>
 			<label ng-repeat="server in serverList" ng-change="load(selectedOption)" class="btn btn-default" ng-model="$parent.selectedOption" btn-radio="server._id">{{server.name}}</label>
 		</div>
-
 	</body>
 </html>
