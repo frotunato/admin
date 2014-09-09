@@ -116,11 +116,9 @@ io
 				if(array[i]['id'] === id) {
 					result = true;
 					index = i;
-					console.log('resultado: verdadero ' + i);
 					break;
 				} else {
 					result = false;
-					console.log('resultado: falso')
 				}
 			};
 		}
