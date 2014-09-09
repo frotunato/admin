@@ -35,8 +35,10 @@ angular.module('adminApp.server', ['ngRoute'])
 		})
 
 		$scope.submit = function () {
-			socket.emit('command', $scope.command);
-			$scope.command = '';
+			if($scope.command !== '') {
+				socket.emit('command', {server: $scope.serverInfo, command: $scope.command});
+				$scope.command = '';
+			}
 		}
 
 		$scope.startChat = function () {
@@ -46,7 +48,6 @@ angular.module('adminApp.server', ['ngRoute'])
 		$scope.startServer = function () {
 			socket.emit('startServer', $scope.serverInfo);
 			$scope.serverStatus = 'Loading';
-			window.alert('LAUNCHED')
 		}
 
 		$scope.stopServer = function () {

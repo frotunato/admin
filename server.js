@@ -9,11 +9,6 @@ var chat = require('./api/chat/chat.js');
 var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
 
-var mc_server_instance = null;
-
-var serverPool = [];
-var socketPool = [];
-var serverPool2 = [];
 var serverPool3 = [];
 
 io
@@ -76,6 +71,7 @@ io
 					})
 					console.log('redirecting ' + server.id + ' stdout to the client');
 				} else {
+					console.log('fail startChat fired');
 					socket.emit('fail', 'fail at startChat');
 				}
 			})
@@ -92,10 +88,11 @@ io
 		});
 
 		
-		socket.on('command', function (server) {
-			checkIfExist3(serverPool3, server['id'], function (result, index) {
+		socket.on('command', function (info) {
+			checkIfExist3(serverPool3, info['server']['id'], function (result, index) {
 				if(result === true) {
-					serverPool3[index]['instance'].write(data + '\r');
+					serverPool3[index]['instance'].stdin.write(info['command'] + '\r');
+					console.log('validated');
 				} else {
 					socket.emit('fail', 'the server is not running');
 				}
@@ -106,7 +103,7 @@ io
 
 
 	function checkIfExist3 (array, id, callback) {
-		var result = false;
+		var result = null;
 		var index = null;
 		
 		if (array.length === 0) {
