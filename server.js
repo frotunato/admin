@@ -10,6 +10,7 @@ var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
 
 var serverPool = [];
+var chatLog = [];
 
 io
 	.on('connection', function (socket) {
@@ -26,7 +27,7 @@ io
 			
 			checkIfExist(serverPool, data['id'], function (exist, index) {
 				var dataResponse = {status: String}
-				if(exist === true) {
+				if(exist) {
 					dataResponse['status'] = 'Online';
 				} else {
 					dataResponse['status'] = 'Offline';
@@ -38,13 +39,27 @@ io
 		})
 		
 		socket.on('startServer', function (data) {
+			console.log('COMMANDED')
 			checkIfExist(serverPool, data['id'], function (exist, index) {
-				if(exist === true) {
+				if(exist) {
 					io.in(room).emit('fail', 'The server is already running at pool index:  ' + index);
 				} else {
 					mcServer = spawn('java', ['-jar', 'minecraft_server.jar', 'nogui'], { cwd: __dirname + '/servers/' + data.id});
 					serverPool.push({id: data['id'], instance: mcServer});
-					io.in(room).emit('getServerStatus', {status: 'Online'});
+					setTimeout(function () {
+						io.in(room).emit('getServerStatus', {status: 'Online'});
+					}, 1300);
+						
+					mcServer.stdout.on('data', function (stdout) {
+						io.in(room).emit('pullChatData', "" + stdout);
+						
+					})
+
+					mcServer.stderr.on('data', function (stderr) {
+						io.in(room).emit('pullChatData', "" + stderr);
+					})
+					
+
 					console.log('pool size when starting: ' + serverPool.length);
 				}
 			});
@@ -52,50 +67,33 @@ io
 
 		socket.on('stopServer', function (data) {
 			checkIfExist(serverPool, data['id'], function (exist, index) {
-				if(exist === true) {
-					serverPool[index]['instance'].kill()
-					serverPool.splice(index);
-					io.in(room).emit('getServerStatus', {status: 'Offline'});
-					console.log('pool size when stopping: ' + serverPool.length);
+				if(exist) {
+					serverPool[index]['instance'].on('exit', function () {
+						console.log('CLOSED')
+						serverPool.splice(index);
+						setTimeout(function () {
+							io.in(room).emit('getServerStatus', {status: 'Offline'});
+						}, 500);
+					});
+					serverPool[index]['instance'].kill();
 				} else {
 					socket.emit('fail', 'The server is not running');
 				}
 			});
 		});
 
-		socket.on('startChat', function (data) {
-			checkIfExist(serverPool, data['id'], function (exist, index) {
-				if(exist === true) {
-					serverPool[index]['instance'].stdout.on('data', function (stdoutData) {
-						socket.emit('pullChatData', "" + stdoutData);
-					})
-					console.log('redirecting ' + data['id'] + ' stdout to the client');
-				} else {
-					socket.emit('fail', 'The server is not running');
-				}
-			});
-		});
-
-		socket.on('stopChat', function (data) {
-			checkIfExist(serverPool, data['id'], function (exist, index) {
-				if(exist === true) {
-					serverPool[index]['instance'].stdout.on('data', function (stdoutData) {});
-				} else {
-					socket.emit('fail', 'The server is not running');
-				}
-			});
-		});
+	
 
 		socket.on('pushChatData', function (data) {
+			console.log('pushing data ' + data.command);
 			checkIfExist(serverPool, data['id'], function (exist, index) {
-				if(exist === true) {
+				if(exist) {
 					serverPool[index]['instance'].stdin.write(data['command'] + '\r');
 				} else {
 					socket.emit('fail', 'The server is not running');
 				}
 			});
 		});
-
 	});
 
 
@@ -116,7 +114,6 @@ io
 				}
 			};
 		}
-		console.log('RESULTADO ' + exist)
 		callback(exist, index);
 	}
 

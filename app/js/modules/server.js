@@ -1,43 +1,43 @@
-angular.module('adminApp.server', ['ngRoute'])
-	.controller('serverCtrl', function ($scope, $routeParams, $compile, serverFactory) {
+angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
+	.controller('serverCtrl', function ($scope, $routeParams, $compile, $location, $anchorScroll, serverFactory) {
 		$scope.routeParams = $routeParams;
 		
 		$scope.chatLine = '';
 		$scope.chatCommand = '';
-		
+		$scope.serverStatus = 'Loading';
+
 		$scope.serverInfo = {id: $scope.routeParams.serverId, room: $scope.routeParams.serverId};
-		$serverStatus = 'Loading';
 		serverFactory.pushClientRoom ($scope.serverInfo);
 	
 		serverFactory.fail(function (data) {
 			console.log('ERROR: ' + data)
-		})
+		});
 
 		serverFactory.getServerStatus(function (data) {
 			$scope.serverStatus = data['status'];
-		})
+		});
 
+		serverFactory.pullChatData(function (data) {
+			$scope.chatLine = data;
+			angular.element(document.getElementById('chatLinesContainer')).append($compile('<p>' + $scope.chatLine + '</p>')($scope));
+		});
 
 
 		$scope.pushChatData = function (){
-			serverFactory.pushChatData({id: $scope.serverInfo['id'], command: $scope.chatCommand});
+			if($scope.chatCommand !== '') {
+				serverFactory.pushChatData({id: $scope.serverInfo['id'], command: $scope.chatCommand});
+				$scope.chatCommand = "";
+			}
 		}
 
 		$scope.startServer = function () {
 			serverFactory.startServer($scope.serverInfo);
+			$scope.serverStatus = 'Loading';
 		}
 		
 		$scope.stopServer = function () {
 			serverFactory.stopServer($scope.serverInfo);
-		}
-
-		$scope.startChat = function () {
-			console.log('startchat ' + JSON.stringify($scope.serverInfo))
-			$scope.startChat = serverFactory.startChat($scope.serverInfo);
-		}
-
-		$scope.stopChat = function () {
-			$scope.stopChat = serverFactory.stopChat($scope.serverInfo);
+			$scope.serverStatus = 'Loading';
 		}
 
 		console.log('controller loaded ' + $scope.serverInfo['id']);
@@ -85,12 +85,6 @@ angular.module('adminApp.server', ['ngRoute'])
 			},
 			stopServer: function (data) {
 				socket.emit('stopServer', data);
-			},
-			startChat: function (data) {
-				socket.emit('startChat', data);
-			},
-			stopChat: function (data) {
-				socket.emit('stopChat', data);
 			},
 			removeAllListeners: function (callback) {
 				socket.getSocket().removeAllListeners();

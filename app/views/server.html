@@ -1,5 +1,3 @@
-<button class="btn btn-danger" ng-click="startServer()">Stop chat</button>
-
 <tabset>
 	<tab heading="General">
 		<p>
@@ -26,9 +24,9 @@
 	
 	<tab heading="Chat">
 		<p>
-			<div id="chatLinesContainer"></div>	
+			<div id="chatLinesContainer" scroll-glue style="overflow:auto;height:350px;width:800px;"></div>	
 			<form ng-submit="pushChatData()" action="">
-				<input type="text" ng-model="$parent.chatCommand">
+				<input type="text" ng-model="$parent.chatCommand" style="width:700px;">
 				<button class="btn btn-default">Send</button>
 			</form>
 		</p>
@@ -49,8 +47,6 @@
 		
 		-->
 		
-		<button class="btn btn-primary" ng-click="$parent.startChat()">Start chat</button>
-		<button class="btn btn-danger" ng-click="$parent.stopChat()">Stop chat</button>
 	</tab>
 	
 	<tab heading="Options">
