@@ -1,3 +1,5 @@
+<button class="btn btn-danger" ng-click="startServer()">Stop chat</button>
+
 <tabset>
 	<tab heading="General">
 		<p>
@@ -25,34 +27,33 @@
 	<tab heading="Chat">
 		<p>
 			<div id="chatLinesContainer"></div>	
-			<form ng-submit="submit()" action="">
-				<input type="text" ng-model="$parent.command">
+			<form ng-submit="pushChatData()" action="">
+				<input type="text" ng-model="$parent.chatCommand">
 				<button class="btn btn-default">Send</button>
 			</form>
 		</p>
-		
-		<!-- START CHAT -->
+	
+		<!-- START CHAT 
+
 		<div ng-switch-when="Disable">
 			<button class="btn btn-danger" ng-bind="$parent.chatStatus" ng-model="$parent.chatStatus" ng-click="$parent.startChat()"></button>
 		</div>
 		
-		<!-- LOADING CHAT -->
 		<div ng-switch-when="Loading">
 			<button class="btn btn-warning" ng-bind="$parent.chatStatus" ng-disabled="$parent.chatStatus === 'Loading'"></button>
 		</div>
 
-		<!-- STOP CHAT -->
 		<div ng-switch-when="Enable">
 			<button class="btn btn-success" ng-bind="$parent.chatStatus" ng-model="$parent.chatStatus" ng-click="$parent.stopChat()"></button>
 		</div>
-
-
-		<button class="btn btn-primary" ng-click="startChat()">Start chat</button>
-		<button class="btn btn-danger" ng-click="stopChat()">Stop chat</button>
+		
+		-->
+		
+		<button class="btn btn-primary" ng-click="$parent.startChat()">Start chat</button>
+		<button class="btn btn-danger" ng-click="$parent.stopChat()">Stop chat</button>
 	</tab>
 	
 	<tab heading="Options">
 	
 	</tab>
 </tabset>
-
