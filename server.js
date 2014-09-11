@@ -10,12 +10,13 @@ var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
 
 var serverPool = [];
-var chatLog = [];
+var roomMessages = [];
 
 io
 	.on('connection', function (socket) {
 		console.log('SOCKET CONNECTION ESTABLISHED');
 		var room = null;
+		var mensaje = 'hola';
 		
 		socket.on('pushClientRoom', function (data) {
 			if(room) {
@@ -25,68 +26,64 @@ io
 			
 			room = data['room'];
 			
-			checkIfExist(serverPool, data['id'], function (exist, index) {
+			socket.join(room);
+			console.log('joined ' + room)
+
+			checkIfExist(serverPool, 'id', data['id'], function (exist, index) {
 				var dataResponse = {status: String}
 				if(exist) {
 					dataResponse['status'] = 'Online';
+					for (var i =  0; i < roomMessages[index]['messages'].length; i++) {
+					socket.emit('pullChatData', roomMessages[index]['messages'][i])
+					};
 				} else {
 					dataResponse['status'] = 'Offline';
 				}
 				socket.emit('getServerStatus', dataResponse);
 			});
-			socket.join(room);
-			console.log('joined ' + room)
-		})
+			
+		});
 		
 		socket.on('startServer', function (data) {
-			console.log('COMMANDED')
-			checkIfExist(serverPool, data['id'], function (exist, index) {
+			checkIfExist(serverPool, 'id',data['id'], function (exist, index) {
 				if(exist) {
 					io.in(room).emit('fail', 'The server is already running at pool index:  ' + index);
 				} else {
-					mcServer = spawn('java', ['-jar', 'minecraft_server.jar', 'nogui'], { cwd: __dirname + '/servers/' + data.id});
+					
+					var mcServer = spawn('java', ['-jar', 'minecraft_server.jar', 'nogui'], { cwd: __dirname + '/servers/' + data['id']});
 					serverPool.push({id: data['id'], instance: mcServer});
+					
 					setTimeout(function () {
 						io.in(room).emit('getServerStatus', {status: 'Online'});
 					}, 1300);
-						
+
+					mcServer.on('exit', function (code, signal) {
+						serverPool.splice(index);
+						setTimeout(function () {
+							io.in(room).emit('getServerStatus', {status: 'Offline'});
+						}, 1300);
+						console.log('server died with code ' + code + " and signal " + signal);
+					})
+
+					roomMessages.push({room: data['room'], messages: []});
+					
 					mcServer.stdout.on('data', function (stdout) {
-						io.in(room).emit('pullChatData', "" + stdout);
-						
+						var message = "" + stdout;
+						console.log('recibiendo data');
+						roomMessages[0].messages.push(message);
+						io.in(room).emit('pullChatData', message);
 					})
 
 					mcServer.stderr.on('data', function (stderr) {
 						io.in(room).emit('pullChatData', "" + stderr);
 					})
-					
-
-					console.log('pool size when starting: ' + serverPool.length);
 				}
 			});
 		});
-
-		socket.on('stopServer', function (data) {
-			checkIfExist(serverPool, data['id'], function (exist, index) {
-				if(exist) {
-					serverPool[index]['instance'].on('exit', function () {
-						console.log('CLOSED')
-						serverPool.splice(index);
-						setTimeout(function () {
-							io.in(room).emit('getServerStatus', {status: 'Offline'});
-						}, 500);
-					});
-					serverPool[index]['instance'].kill();
-				} else {
-					socket.emit('fail', 'The server is not running');
-				}
-			});
-		});
-
-	
 
 		socket.on('pushChatData', function (data) {
-			console.log('pushing data ' + data.command);
-			checkIfExist(serverPool, data['id'], function (exist, index) {
+			console.log('pushing data ' + data['command']);
+			checkIfExist(serverPool, 'id', data['id'], function (exist, index) {
 				if(exist) {
 					serverPool[index]['instance'].stdin.write(data['command'] + '\r');
 				} else {
@@ -97,7 +94,7 @@ io
 	});
 
 
-	function checkIfExist (array, id, callback) {
+	function checkIfExist (array, prop, value, callback) {
 		var exist = null;
 		var index = null;
 		
@@ -105,7 +102,7 @@ io
 			exist = false;
 		} else {
 			for (var i = array.length - 1; i >= 0; i--) {
-				if(array[i]['id'] === id) {
+				if(array[i][prop] === value) {
 					exist = true;
 					index = i;
 					break;

@@ -4,6 +4,8 @@ var mongoose = require('mongoose');
 var router = express.Router();
 var Server = require('./models/server');
 
+app.use(router);
+
 router.route('/api/servers')
 	.get(function (req, res) {
 		Server.find({}, '_id name', function (err, data) {
@@ -41,4 +43,3 @@ router.route('/api/servers/:_id')
 		});
 	});
 
-app.use(router);

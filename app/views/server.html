@@ -5,17 +5,17 @@
 
 				<!-- START SERVER -->
 				<div ng-switch-when="Offline">
-					<button class="btn btn-danger" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.startServer()"></button>
+					<button style="width:80px;" class="btn btn-danger" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.startServer()"></button>
 				</div>
 				
 				<!-- LOADING SERVER -->
 				<div ng-switch-when="Loading">
-					<button class="btn btn-warning" ng-bind="$parent.serverStatus" ng-disabled="$parent.serverStatus === 'Loading'"></button>
+					<button style="width:80px;" class="btn btn-warning" ng-bind="$parent.serverStatus" ng-disabled="$parent.serverStatus === 'Loading'"></button>
 				</div>
 
 				<!-- STOP SERVER -->
 				<div ng-switch-when="Online">
-					<button class="btn btn-success" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.stopServer()"></button>
+					<button style="width:80px;" class="btn btn-success" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.stopServer()"></button>
 				</div>
 			
 			</div>

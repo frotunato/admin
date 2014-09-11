@@ -36,7 +36,7 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 		}
 		
 		$scope.stopServer = function () {
-			serverFactory.stopServer($scope.serverInfo);
+			serverFactory.pushChatData({id: $scope.serverInfo['id'], command: 'stop'});
 			$scope.serverStatus = 'Loading';
 		}
 
@@ -82,9 +82,6 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 			},
 			startServer: function (data) {
 				socket.emit('startServer', data);
-			},
-			stopServer: function (data) {
-				socket.emit('stopServer', data);
 			},
 			removeAllListeners: function (callback) {
 				socket.getSocket().removeAllListeners();
