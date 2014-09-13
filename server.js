@@ -5,9 +5,13 @@ var mongoose = require('mongoose');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var servers = require('./api/servers/servers.js');
+var mcServer = require('./api/mc-server');
 var chat = require('./api/chat/chat.js');
 var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
+
+mongoose.connect('mongodb://127.0.0.1:27017/Fortuna');
+
 
 var serverPool = [];
 var roomMessages = [];
@@ -114,12 +118,12 @@ io
 		callback(exist, index);
 	}
 
-mongoose.connect('mongodb://127.0.0.1:27017/Fortuna');
 
 app
 	.use(bodyParser.urlencoded({extended:true}))
 	.use(morgan(':remote-addr :method :url'))
 	.use(servers)
+	.use(mcServer)
 	.use(express.static(__dirname + '/app'));
 
 server.listen('4000', function () {

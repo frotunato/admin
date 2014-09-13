@@ -30,26 +30,12 @@
 				<button class="btn btn-default">Send</button>
 			</form>
 		</p>
-	
-		<!-- START CHAT 
-
-		<div ng-switch-when="Disable">
-			<button class="btn btn-danger" ng-bind="$parent.chatStatus" ng-model="$parent.chatStatus" ng-click="$parent.startChat()"></button>
-		</div>
-		
-		<div ng-switch-when="Loading">
-			<button class="btn btn-warning" ng-bind="$parent.chatStatus" ng-disabled="$parent.chatStatus === 'Loading'"></button>
-		</div>
-
-		<div ng-switch-when="Enable">
-			<button class="btn btn-success" ng-bind="$parent.chatStatus" ng-model="$parent.chatStatus" ng-click="$parent.stopChat()"></button>
-		</div>
-		
-		-->
 		
 	</tab>
 	
-	<tab heading="Options">
-	
+	<tab heading="Settings">
+	  <div ng-controller="serverSettingsCtrl">
+			<button class="btn btn-default" ng-click="showModal()">Edit</button>
+		</div>
 	</tab>
 </tabset>

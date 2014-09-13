@@ -1,0 +1,187 @@
+<div id="modalWrapper">
+
+	<div>  
+		<div class="modal-header">
+			<h3 class="modal-title">Server properties</h3>
+		</div>
+	</div>
+
+	<div class="modal-body">
+		<form id="serverPropertiesForm">
+			<accordion close-others="true">
+				<fieldset id="network">
+					<accordion-group heading="Network" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
+						<div class="btn-group" id="onlineMode">
+					    <h4>Online mode</h4>
+					    <label class="btn btn-default"  ng-model="properties.name" btn-radio="'true'">Enabled</label>
+					    <label class="btn btn-default"  ng-model="properties.name" btn-radio="'false'">Disabled</label>
+					  </div>
+
+						<div id="externalAccess">
+							<h4>External access</h4>	
+								<div class="btn-group" id="enableQuery">
+								  <h5>Queries</h5>
+								  <label class="btn btn-default"  ng-model="properties.enableQuery" btn-radio="'true'">Enabled</label>
+								  <label class="btn btn-default"  ng-model="properties.enableQuery" btn-radio="'false'">Disabled</label>
+								</div>
+							
+								<div class="btn-group" id="enableRcon">
+							   <h5>Rcon</h5>
+							   <label class="btn btn-default"  ng-model="properties.enableRcon" btn-radio="'true'">Enabled</label>
+							    <label class="btn btn-default"  ng-model="properties.enableRcon" btn-radio="'false'">Disabled</label>
+							 	</div>
+						</div>
+
+					  <div id="serverIpAndPort">
+					  	<h4>Server IP and port</h4>
+					  	<input class="form-control" style="width:140px;" placeholder="Enter a valid IP" type="text" maxlength="15" ng-model="properties.serverIp">
+					  	<input class="form-control" style="width:85px;" placeholder="8080" type="number" min="0" max="61000" step="1000" ng-model="properties.serverPort">
+					 </div>
+
+					 <div id="advancedNetwork">
+				 			<div id="networkCompressionThreshold">
+				 				<h4>Network compresssion threshold</h4>
+				 				<select tooltip-popup-delay='1000' tooltip="Allows packets that are n-1 bytes big to go normally, but a packet that n bytes or more will be compressed down. So, lower number means more compression but compressing small amounts of bytes might actually end up with a larger result than what went in." class="form-control" style="width:120px;" ng-model="properties.networkCompressionThreshold">
+				 				  <option value="-1">Disabled</option>
+				 				  <option value="64">64</option>
+				 				  <option value="128">128</option>
+				 				  <option value="256">256</option>
+				 					<option value="512">512</option>
+				 					<option value="1024">1024</option>
+				 				</select>		 			
+				 			</div>
+				 			<div id="maxTickTime">
+					 			<h4>Max tick time</h4>
+					 			<input class="form-control" style="width:100px;" type="number" step="10000" tooltip-popup-delay="1000" min="-1" ng-model="properties.maxTickTime" tooltip="Maximum number of milliseconds a single tick may take before the server watchdog stops the server. Set it to -1 to disable the watchdog server.">
+				 			</div> 
+					 </div>
+					</accordion-group>
+				</fieldset>
+				
+				<fieldset id="map">
+					<accordion-group heading="Map">
+						
+						<div id="motd">
+							<div id="levelSeed">
+								<h4>Message of the day</h4>
+								<input class="form-control" type="text" style="width:180px;" placeholder="A Minecraft Server" maxlength="40" ng-model="properties.motd">
+							</div>
+
+						</div>
+
+						<div id="levelSeed">
+							<h4>Level seed</h4>
+							<input class="form-control" type="text" style="width:180px;" placeholder="Enter a level seed" maxlength="40" ng-model="properties.levelSeed">
+						</div>
+
+						<div class="btn-group" id="levelType">
+							<h4>Level type</h4>
+							<label class="btn btn-default" tooltip-popup-delay="1000" tooltip="Standard world with hills, valleys, water, etc." ng-model="properties.levelType" btn-radio="'DEFAULT'">Default</label>
+							<label class="btn btn-default" tooltip-popup-delay="1000" tooltip="A flat world with no features, meant for building." ng-model="properties.levelType" btn-radio="'FLAT'">Flat</label>
+							<label class="btn btn-default" tooltip-popup-delay="1000" tooltip="Same as default but all biomes are larger." ng-model="properties.levelType" btn-radio="'LARGEBIOMES'">Large biomes</label>
+							<label class="btn btn-default" tooltip-popup-delay="1000" tooltip="Same as default but world-generation height limit is increased." ng-model="properties.levelType" btn-radio="'AMPLIFIED'">Amplified</label>
+						</div>
+
+						<div class="btn-group" id="generateStructures">
+							<h4>Generate structures</h4>
+							<label class="btn btn-default" ng-model="properties.generateStructures" btn-radio="'true'">Enabled</label>
+							<label class="btn btn-default" ng-model="properties.generateStructures" btn-radio="'false'">Disabled</label>
+						</div>
+					
+						<div id="viewDistance">
+							<h4>View distance</h4>
+							<input tooltip-popup-delay="1000" style="width:60px;" tooltip="Sets the amount of world data the server sends the client, measured in chunks in each direction of the player (radius, not diameter). It determines the server-side viewing distance. 10 is the default/recommended. If you have major lag, reduce this value." type="number" min="3" max="15" step="1" ng-model="properties.viewDistance" class="form-control">
+						</div>
+
+						<div id="maxBuildHeight">
+							<h4>Max build height</h4>
+							<input tooltip="The maximum height in which building is allowed. Terrain may still naturally generate above a low height limit." tooltip-popup-delay="1000" style="width:70px;" type="number" min="1" max="256" step="1" ng-model="properties.maxBuildHeight" class="form-control">
+						</div>
+						
+						<div id="maxWorldSize">
+							<h4>Max world size</h4>
+							<input tooltip="This sets the maximum possible size in blocks, expressed as a radius, that the world border can obtain. Setting the world border bigger causes the commands to complete successfully but the actual border will not move past this block limit. 1000 will allow you to have a 2000x2000 world border, with 4000 will give you an 8000 x 8000 world border." tooltip-popup-delay="1000" style="width:140px;" type="number" min="1" max="29999984" step="1000" ng-model="properties.maxWorldSize" class="form-control">
+						</div>
+
+					</accordion-group>
+				</fieldset>
+				
+				<fieldset id="gameplay">
+					<accordion-group heading="Gameplay">
+					
+						<div class="btn-group" id="generateIA">
+							<h4>Spawn animals, monsters and villagers</h4>
+							<label class="btn btn-default" ng-model="properties.spawnAnimals" btn-checkbox>Animals</label>
+							<label class="btn btn-default" ng-model="properties.spawnMonsters" btn-checkbox>Monsters</label>
+							<label class="btn btn-default" ng-model="properties.spawnNpcs" btn-checkbox>Villagers</label>
+						</div>
+					
+						<div class="btn-group" id="pvp">
+							<h4>PvP</h4>
+							<label class="btn btn-default"  ng-model="properties.pvp" btn-radio="'true'">Enabled</label>
+							<label class="btn btn-default"  ng-model="properties.pvp" btn-radio="'false'">Disabled</label>
+						</div>
+					
+						<div class="btn-group" id="difficulty">
+							<h4>Difficulty</h4>	
+							<label class="btn btn-default"  ng-model="properties.difficulty" btn-radio="'0'">Peaceful</label>
+							<label class="btn btn-default"  ng-model="properties.difficulty" btn-radio="'1'">Easy</label>
+							<label class="btn btn-default"  ng-model="properties.difficulty" btn-radio="'2'">Normal</label>
+							<label class="btn btn-default"  ng-model="properties.difficulty" btn-radio="'3'">Hard</label>
+						</div>
+
+						<div <div class="btn-group" id="gamemode">
+							<h4>Gamemode</h4>	
+							<label class="btn btn-default"  ng-model="properties.gamemode" btn-radio="'0'">Survival</label>
+							<label class="btn btn-default"  ng-model="properties.gamemode" btn-radio="'1'">Creative</label>
+							<label class="btn btn-default"  ng-model="properties.gamemode" btn-radio="'2'">Adventure</label>
+							<label class="btn btn-default"  ng-model="properties.gamemode" btn-radio="'3'">Spectator</label>
+							<div id="forceGamemode">
+								<label class="btn btn-default" ng-model="properties.forceGamemode" btn-checkbox>Lock</label>
+							</div>
+						</div>
+
+					</accordion-group>
+				</fieldset>
+				
+				<fieldset id="permissions">
+					<accordion-group heading="Permissions">
+
+						<div id="opPermissionLevel">
+							<h4>Op permission level</h4>
+							<input tooltip-popup-delay="1000" style="width:70px;" tooltip="Sets permission level for ops.
+							1 - Ops can bypass spawn protection.
+							2 - Ops can use /clear, /difficulty, /effect, /gamemode, /gamerule, /give, and /tp, and can edit command blocks.
+							3 - Ops can use /ban, /deop, /kick, and /op.
+							4 - Ops can use /stop." type="number" min="1" max="4" step="1" ng-model="properties.opPermissionLevel" class="form-control">
+						</div>
+					
+						<div id="playerIdleTimeout">
+							<h4>Timeout for players</h4>
+							<input style="width:70px;" tooltip="If non-zero, players are kicked from the server if they are idle for more than that many minutes." type="number" min="0" max="500" tooltip-popup-delay="1000" step="1" ng-model="properties.playerIdleTimeout" class="form-control">
+						</div>
+
+						<div class="btn-group" id="allowThings">
+							<h4>Toggle special features</h4>
+							<label class="btn btn-default" ng-model="properties.allowNether" btn-checkbox>Nether</label>
+							<label class="btn btn-default" ng-model="properties.whitelist" btn-checkbox>Whitelist</label>
+							<label class="btn btn-default" ng-model="properties.enableCommandBlock" btn-checkbox>Command block</label>
+						  <label class="btn btn-default" ng-model="properties.allowFlight" btn-checkbox>Flight</label>
+						</div>							
+
+					</accordion-group>
+				</fieldset>
+			</accordion>
+		</form>
+
+	{{properties}}
+
+	</div>
+
+	<div class="modal-footer">
+	  <button class="btn btn-primary" ng-click="ok()">OK</button>
+	  <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+  </div>
+
+</div>
+

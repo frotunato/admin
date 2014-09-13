@@ -14,7 +14,7 @@
 	</head>
 	<body>
 	<div ng-view style="position:absolute;margin-left:140px;"></div>
-		<div class="btn-group-vertical" ng-controller="serverNavBarCtrl" <tabset style="position:absolute;margin-top:40px;">
+		<div class="btn-group-vertical" ng-controller="serverNavBarCtrl">
 			<label class="btn btn-default" ng-change="load(selectedOption)" ng-model="selectedOption" btn-radio="'overview'">overview</label>
 			<label ng-repeat="server in serverList" ng-change="load(selectedOption)" class="btn btn-default" ng-model="$parent.selectedOption" btn-radio="server._id">{{server.name}}</label>
 		</div>

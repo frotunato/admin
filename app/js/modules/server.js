@@ -51,6 +51,43 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 		
 		})
 	
+	.controller('serverSettingsCtrl', function ($scope, $modal) {
+		$scope.properties = { name: 'server 20', port: 4000, type: 'Survival', networkCompressionThreshold: '256' };
+		$scope.showModal = function () {
+			$scope.opts = {
+				backdrop: true,
+				backdropClick: true,
+				dialogFade: false,
+				keyboard: true,
+				templateUrl: 'views/serverSettingsModal.html',
+				controller: 'modalInstanceCtrl',
+				size: 'lg',
+				resolve: {}
+			};
+			
+			$scope.NCT = ['']	
+		
+			var modalInstance = $modal.open($scope.opts);
+		
+			modalInstance.result.then(function () {
+				console.log('Modal accepted');
+			}, function () {
+				console.log('Modal closed');
+			})
+		}
+
+	})
+
+	.controller('modalInstanceCtrl', function ($scope, $modal, $modalInstance) {
+		$scope.properties = { name: 'server 20', serverPort: 4000, type: 'Survival' };
+		 $scope.ok = function () {
+		 	$modalInstance.close();
+		 };
+		 $scope.cancel = function () {
+		 	$modalInstance.dismiss('cancel');
+		 }
+	})
+
 	.factory('serverFactory', function (socket) {
 
 		return {
