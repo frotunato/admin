@@ -128,3 +128,25 @@ var j4 = schedule.scheduleJob('* * * * *', function () {
 });
 
 */
+
+
+
+var worker = {
+	timer: 0,
+	beacon: function () {
+		this.timer = process.hrtime();
+	}
+}
+
+w1 = Object.create(worker);
+w1.beacon();
+
+setTimeout(function () {
+	var t = process.hrtime(w1.timer);
+	if(t[0] > 1) {
+		console.log('the worker is gonna die');
+	} else {
+		console.log('is too soon');
+	}
+},200)
+

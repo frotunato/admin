@@ -163,11 +163,12 @@
 
 						<div class="btn-group" id="allowThings">
 							<h4>Toggle special features</h4>
-							<label class="btn btn-default" ng-model="properties.allowNether" btn-checkbox>Nether</label>
-							<label class="btn btn-default" ng-model="properties.whitelist" btn-checkbox>Whitelist</label>
-							<label class="btn btn-default" ng-model="properties.enableCommandBlock" btn-checkbox>Command block</label>
-						  <label class="btn btn-default" ng-model="properties.allowFlight" btn-checkbox>Flight</label>
+							<label class="btn btn-default" ng-class="{'btn btn-success': properties.allowNether === true, 'btn btn-default': properties.allowNether === false}" ng-model="properties.allowNether" btn-checkbox>Nether</label>
+							<label class="btn btn-default" ng-class="{'btn btn-success': properties.whitelist === true, 'btn btn-default': properties.whitelist === false}" ng-model="properties.whitelist" btn-checkbox>Whitelist</label>
+							<label class="btn btn-default" ng-class="{'btn btn-success': properties.enableCommandBlock === true, 'btn btn-default': properties.enableCommandBlock === false}" ng-model="properties.enableCommandBlock" btn-checkbox>Command block</label>
+						  <label class="btn btn-default" ng-class="{'btn btn-success': properties.allowFlight === true, 'btn btn-default': properties.allowFlight === false}" ng-model="properties.allowFlight" btn-checkbox>Flight</label>
 						</div>							
+
 
 					</accordion-group>
 				</fieldset>

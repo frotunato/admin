@@ -23,7 +23,7 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 		});
 
 
-		$scope.pushChatData = function (){
+		$scope.pushChatData = function () {
 			if($scope.chatCommand !== '') {
 				serverFactory.pushChatData({id: $scope.serverInfo['id'], command: $scope.chatCommand});
 				$scope.chatCommand = "";
@@ -52,24 +52,45 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 		})
 	
 	.controller('serverSettingsCtrl', function ($scope, $modal) {
-		$scope.properties = { name: 'server 20', port: 4000, type: 'Survival', networkCompressionThreshold: '256' };
-		$scope.showModal = function () {
+		$scope.showServerPropertiesModal = function () {
 			$scope.opts = {
 				backdrop: true,
 				backdropClick: true,
 				dialogFade: false,
 				keyboard: true,
-				templateUrl: 'views/serverSettingsModal.html',
-				controller: 'modalInstanceCtrl',
+				templateUrl: 'views/serverPropertiesModal.html',
+				controller: 'serverPropertiesModalInstanceCtrl',
+				size: 'lg',
+				resolve: {}
+			};
+			
+		
+			var serverPropertiesModalInstance = $modal.open($scope.opts);
+		
+			serverPropertiesModalInstance.result.then(function () {
+				console.log('Modal accepted');
+			}, function () {
+				console.log('Modal closed');
+			})
+		}
+
+		$scope.showWhitelistModal = function () {
+			$scope.opts = {
+				backdrop: true,
+				backdropClick: true,
+				dialogFade: false,
+				keyboard: true,
+				templateUrl: 'views/whitelistModal.html',
+				controller: 'whitelistModalInstanceCtrl',
 				size: 'lg',
 				resolve: {}
 			};
 			
 			$scope.NCT = ['']	
 		
-			var modalInstance = $modal.open($scope.opts);
+			var whitelistModalInstance = $modal.open($scope.opts);
 		
-			modalInstance.result.then(function () {
+			whitelistModalInstance.result.then(function () {
 				console.log('Modal accepted');
 			}, function () {
 				console.log('Modal closed');
@@ -78,7 +99,7 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 
 	})
 
-	.controller('modalInstanceCtrl', function ($scope, $modal, $modalInstance) {
+	.controller('serverPropertiesModalInstanceCtrl', function ($scope, $modal, $modalInstance) {
 		$scope.properties = { name: 'server 20', serverPort: 4000, type: 'Survival' };
 		 $scope.ok = function () {
 		 	$modalInstance.close();
@@ -86,6 +107,28 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 		 $scope.cancel = function () {
 		 	$modalInstance.dismiss('cancel');
 		 }
+	})
+
+	.controller('whitelistModalInstanceCtrl', function ($scope, $modal, $modalInstance) {
+		$scope.currentPage = 1;
+		$scope.ok = function () {
+			$modalInstance.close();
+		};
+		$scope.cancel = function () {
+			$modalInstance.dismiss('cancel');
+		};
+		$scope.whitelist = ['fortuna', 'perico', 'chencho', 'yolo'];
+		$scope.user = '';
+		
+
+		$scope.addUser = function () {
+			if($scope.user !== '' && $scope.whitelist.indexOf($scope.user) === -1) {
+				$scope.whitelist.push($scope.user);
+				$scope.user = '';
+			} else {
+				$scope.user = '';
+			}
+		}
 	})
 
 	.factory('serverFactory', function (socket) {

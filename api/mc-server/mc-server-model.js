@@ -6,7 +6,11 @@ var McServerSchema = new Schema({
 	name: String,
 	maps: Array,
 	backups: Array,
-	properties: Object
+	serverProperties: Object,
+	ops: Array,
+	whitelist: Array,
+	bannedIps: Array,
+	bannedPlayers: Array,
 });
 
 module.exports = mongoose.model('McServer', McServerSchema);

@@ -1,0 +1,28 @@
+<div id="modalWrapper">
+
+	<div>  
+		<div class="modal-header">
+			<h3 class="modal-title">Whitelist</h3>
+		</div>
+	</div>
+
+
+	<div class="modal-body">
+		<input type="text" ng-model="query">
+		<ul>
+			<li ng-repeat="username in $parent.whitelist | filter:query">
+				{{username}}
+			</li>		
+		</ul>
+		
+		<input type="text" ng-model="$parent.user" class="form-control" style="width: 200px;">
+		<button class="btn btn-default" ng-click="$parent.addUser()">Add user</button>
+	</div>
+
+	<div class="modal-footer">
+	  <button class="btn btn-primary" ng-click="ok()">OK</button>
+	  <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+  </div>
+
+</div>
+

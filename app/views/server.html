@@ -33,9 +33,10 @@
 		
 	</tab>
 	
-	<tab heading="Settings">
-	  <div ng-controller="serverSettingsCtrl">
-			<button class="btn btn-default" ng-click="showModal()">Edit</button>
-		</div>
+	<tab heading="Settings" ng-controller="serverSettingsCtrl">
+			<button class="btn btn-default" ng-click="showServerPropertiesModal()">Edit server properties</button>
+
+			<button class="btn btn-default" ng-click="showWhitelistModal()">Edit whitelist</button>
+
 	</tab>
 </tabset>
