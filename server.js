@@ -35,7 +35,7 @@ io
 			console.log('joined ' + room)
 
 			checkIfExist(serverPool, 'id', data['id'], function (exist, index) {
-				var dataResponse = {status: String}
+				var dataResponse = {status: null};
 				if(exist) {
 					dataResponse['status'] = 'Online';
 					for (var i =  0; i < roomMessages[index]['messages'].length; i++) {
@@ -50,22 +50,24 @@ io
 		});
 		
 		socket.on('startServer', function (data) {
-			checkIfExist(serverPool, 'id',data['id'], function (exist, index) {
+			checkIfExist(serverPool, 'id', data['id'], function (exist, index) {
 				if(exist) {
 					io.in(room).emit('fail', 'The server is already running at pool index:  ' + index);
 				} else {
 					
 					var mcServer = spawn('java', ['-jar', 'minecraft_server.jar', 'nogui'], { cwd: __dirname + '/servers/' + data['id']});
+					mcServer['id'] = data['id'];
+
 					serverPool.push({id: data['id'], instance: mcServer});
 					
 					setTimeout(function () {
-						io.in(room).emit('getServerStatus', {status: 'Online'});
+						io.in(mcServer['id']).emit('getServerStatus', {status: 'Online'});
 					}, 1300);
 
 					var serverLoad = setInterval(function () {
 						task.procStat(mcServer.pid, function (err, data) { 
 						var memory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
-						io.in(room).emit('serverLoad', {memoryUsage: memory});
+						io.in(mcServer['id']).emit('serverLoad', {memoryUsage: memory});
 						})
 					}, 1300)
 
@@ -73,7 +75,7 @@ io
 						clearInterval(serverLoad);
 						serverPool.splice(index);
 						setTimeout(function () {
-							io.in(room).emit('getServerStatus', {status: 'Offline'});
+							io.in(mcServer['id']).emit('getServerStatus', {status: 'Offline'});
 						}, 1300);
 						console.log('server died with code ' + code + " and signal " + signal);
 					})
@@ -81,14 +83,14 @@ io
 					roomMessages.push({room: data['room'], messages: []});
 					
 					mcServer.stdout.on('data', function (stdout) {
+						console.log('MANDADO DATOS HACIA ' + mcServer['id']);
 						var message = "" + stdout;
-						console.log('recibiendo data');
 						roomMessages[0].messages.push(message);
-						io.in(room).emit('pullChatData', message);
+						io.in(mcServer['id']).emit('pullChatData', message);
 					})
 
 					mcServer.stderr.on('data', function (stderr) {
-						io.in(room).emit('pullChatData', "" + stderr);
+						io.in(mcServer['id']).emit('pullChatData', "" + stderr);
 					})
 				}
 			});
