@@ -5,6 +5,9 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 		$scope.chatLine = '';
 		$scope.chatCommand = '';
 		$scope.serverStatus = 'Loading';
+		$scope.dynamic = NaN;
+		$scope.max = 1000;
+
 
 		$scope.serverInfo = {id: $scope.routeParams.serverId, room: $scope.routeParams.serverId};
 		serverFactory.pushClientRoom ($scope.serverInfo);
@@ -15,6 +18,7 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 
 		serverFactory.getServerStatus(function (data) {
 			$scope.serverStatus = data['status'];
+			if(data['status'] === 'Offline') $scope.dynamic = NaN; 
 		});
 
 		serverFactory.pullChatData(function (data) {
@@ -22,6 +26,10 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 			angular.element(document.getElementById('chatLinesContainer')).append($compile('<p>' + $scope.chatLine + '</p>')($scope));
 		});
 
+		serverFactory.serverLoad(function (data) {
+			$scope.dynamic = data.memoryUsage/1000;
+			console.log(data);
+		})
 
 		$scope.pushChatData = function () {
 			if($scope.chatCommand !== '') {
@@ -63,7 +71,6 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 				size: 'lg',
 				resolve: {}
 			};
-			
 		
 			var serverPropertiesModalInstance = $modal.open($scope.opts);
 		
@@ -82,12 +89,10 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 				keyboard: true,
 				templateUrl: 'views/whitelistModal.html',
 				controller: 'whitelistModalInstanceCtrl',
-				size: 'lg',
+				size: 'md',
 				resolve: {}
 			};
-			
-			$scope.NCT = ['']	
-		
+					
 			var whitelistModalInstance = $modal.open($scope.opts);
 		
 			whitelistModalInstance.result.then(function () {
@@ -98,6 +103,9 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 		}
 
 	})
+
+	
+		
 
 	.controller('serverPropertiesModalInstanceCtrl', function ($scope, $modal, $modalInstance) {
 		$scope.properties = { name: 'server 20', serverPort: 4000, type: 'Survival' };
@@ -110,24 +118,19 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 	})
 
 	.controller('whitelistModalInstanceCtrl', function ($scope, $modal, $modalInstance) {
-		$scope.currentPage = 1;
 		$scope.ok = function () {
 			$modalInstance.close();
 		};
 		$scope.cancel = function () {
 			$modalInstance.dismiss('cancel');
 		};
-		$scope.whitelist = ['fortuna', 'perico', 'chencho', 'yolo'];
+		$scope.whitelist = ['fortuna', 'perico', 'perica', 'yolo'];
 		$scope.user = '';
-		
-
 		$scope.addUser = function () {
 			if($scope.user !== '' && $scope.whitelist.indexOf($scope.user) === -1) {
 				$scope.whitelist.push($scope.user);
-				$scope.user = '';
-			} else {
-				$scope.user = '';
-			}
+			} 
+			$scope.user = '';
 		}
 	})
 
@@ -162,6 +165,11 @@ angular.module('adminApp.server', ['ngRoute', 'luegg.directives'])
 			},
 			startServer: function (data) {
 				socket.emit('startServer', data);
+			},
+			serverLoad: function (callback) {
+				socket.on('serverLoad', function (data) {
+					callback(data);
+				});
 			},
 			removeAllListeners: function (callback) {
 				socket.getSocket().removeAllListeners();

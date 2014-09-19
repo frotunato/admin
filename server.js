@@ -9,6 +9,7 @@ var mcServer = require('./api/mc-server');
 var chat = require('./api/chat/chat.js');
 var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
+var task = require('ms-task');
 
 mongoose.connect('mongodb://127.0.0.1:27017/Fortuna');
 
@@ -61,7 +62,15 @@ io
 						io.in(room).emit('getServerStatus', {status: 'Online'});
 					}, 1300);
 
+					var serverLoad = setInterval(function () {
+						task.procStat(mcServer.pid, function (err, data) { 
+						var memory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
+						io.in(room).emit('serverLoad', {memoryUsage: memory});
+						})
+					}, 1300)
+
 					mcServer.on('exit', function (code, signal) {
+						clearInterval(serverLoad);
 						serverPool.splice(index);
 						setTimeout(function () {
 							io.in(room).emit('getServerStatus', {status: 'Offline'});

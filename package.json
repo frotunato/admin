@@ -9,6 +9,10 @@
         "express-session": "latest",
         "body-parser": "latest",
         "morgan": "latest",
-        "socket.io": "latest"
+        "socket.io": "latest",
+        "node-uuid": "latest",
+        "request": "latest",
+        "process-monitor": "latest",
+        "ms-task": "latest"
     }
 }
