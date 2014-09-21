@@ -6,6 +6,7 @@ var McServerSchema = new Schema({
 	name: String,
 	maps: Array,
 	backups: Array,
+	log: Array,
 	serverProperties: Object,
 	ops: Array,
 	whitelist: Array,

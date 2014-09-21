@@ -1,3 +1,4 @@
+/*
 var request = require('request');
 var EventEmitter = require('events').EventEmitter;
 var ee = new EventEmitter();
@@ -17,6 +18,50 @@ setInterval(function () {
 ee.on('done', function (data) {
 	console.log(data);
 })
+*/
+/*
+var serverPool = [];
+
+serverPool.push({stdout: null, id: '11x'});
+serverPool.push({stdout: null, id: '1x1'});
+serverPool.push({stdout: null, id: 'x11'});
+
+for(server in serverPool) {
+	if(server['id'] === 'x11') {
+		console.log('done');
+		break;
+	}
+	console.log('a')
+}
+
+for (var i = serverPool.length - 1; i >= 0; i--) {
+	if(serverPool[i]['id'] === 'x11') {
+		console.log('done');
+		break;
+	}
+};
+*/
+
+var fechas = [];
+
+fechas.push({time: Date.now(), memory: 400, cpu: 20});
+fechas.push({time: Date.now(), memory: 400, cpu: 20});
+fechas.push({time: Date.now(), memory: 400, cpu: 20});
+fechas.push({time: Date.now(), memory: 400, cpu: 20});
+
+console.log(fechas)
+var d = new Date();
+console.log(d.getHours(), d.getMinutes(), d.getSeconds())
+
+
+
+var curr_date = d.getDate();
+
+var curr_month = d.getMonth();
+
+var curr_year = d.getFullYear();
+
+console.log(curr_date, curr_month, curr_year)
 
 /*
 function getUUID(name, callback) {

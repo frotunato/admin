@@ -2,7 +2,23 @@ var express = require('express');
 var app = module.exports = express();
 var mongoose = require('mongoose');
 var router = express.Router();
+var task = require('ms-task');
+
 var McServer = require('./mc-server-model');
+
+
+var insertRecord = function (id, record) {
+	var _id = mongoose.Types.ObjectId(id);
+	McServer.update(_id, { $push: { log: record } });
+	console.log(record)
+}
+
+var getLog = function (id, callback) {
+	var _id = mongoose.Types.ObjectId(id);
+	McServer.findById(_id, 'log', function (err, data) {
+		callback(data);
+	})
+}
 
 app.use(router);
 
@@ -112,3 +128,7 @@ router.route('/api/mcServer')
 				res.send(data);
 			});
 		});
+
+
+		module.exports.insertRecord = insertRecord;
+		module.exports.getLog = getLog; 

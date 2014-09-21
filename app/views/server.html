@@ -17,13 +17,20 @@
 				<div ng-switch-when="Online">
 					<button style="width:80px;" class="btn btn-success" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.stopServer()"></button>
 				</div>
-			
+			<p>
 				<div class="row">
+					
 					<progressbar max="max" value="dynamic">
 						<span style="color:black; white-space:nowrap;">{{dynamic}} MB / {{max}} MB</span>
 					</progressbar>
 				</div>
-			
+			</p>
+				<div ng-controller="chartCtrl">
+
+				    <linechart style="height:700;width:1200px;" data="data" options="options" mode=""></linechart>
+
+				  </div>
+
 			</div>
 		</p>
 	</tab>

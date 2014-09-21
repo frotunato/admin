@@ -13,6 +13,7 @@
         "node-uuid": "latest",
         "request": "latest",
         "process-monitor": "latest",
-        "ms-task": "latest"
+        "ms-task": "latest",
+        "windows-cpu": "latest"
     }
 }

@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var servers = require('./api/servers/servers.js');
-var mcServer = require('./api/mc-server');
+var mcServerApi = require('./api/mc-server/index.js');
 var chat = require('./api/chat/chat.js');
 var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
@@ -13,6 +13,12 @@ var task = require('ms-task');
 
 mongoose.connect('mongodb://127.0.0.1:27017/Fortuna');
 
+app
+	.use(bodyParser.urlencoded({extended:true}))
+	.use(morgan(':remote-addr :method :url'))
+	.use(servers)
+	.use(mcServerApi)
+	.use(express.static(__dirname + '/app'));
 
 var serverPool = [];
 var roomMessages = [];
@@ -23,6 +29,10 @@ io
 		var room = null;
 		var mensaje = 'hola';
 		
+		mcServerApi.getLog('5406241dd51f18600621c916', function (data) {
+			console.log(data);
+		})
+
 		socket.on('pushClientRoom', function (data) {
 			if(room) {
 				socket.leave(room);
@@ -52,24 +62,34 @@ io
 		socket.on('startServer', function (data) {
 			checkIfExist(serverPool, 'id', data['id'], function (exist, index) {
 				if(exist) {
-					io.in(room).emit('fail', 'The server is already running at pool index:  ' + index);
+					io.in(mcServer['id']).emit('fail', 'The server is already running at pool index:  ' + index);
 				} else {
 					
 					var mcServer = spawn('java', ['-jar', 'minecraft_server.jar', 'nogui'], { cwd: __dirname + '/servers/' + data['id']});
 					mcServer['id'] = data['id'];
 
-					serverPool.push({id: data['id'], instance: mcServer});
+					serverPool.push(mcServer);
 					
 					setTimeout(function () {
 						io.in(mcServer['id']).emit('getServerStatus', {status: 'Online'});
 					}, 1300);
 
-					var serverLoad = setInterval(function () {
-						task.procStat(mcServer.pid, function (err, data) { 
-						var memory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
-						io.in(mcServer['id']).emit('serverLoad', {memoryUsage: memory});
+					var chart = setInterval(function () {
+						task.procStat(mcServer['pid'], function (err, data) { 
+							console.log('a')
+							var actualMemory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
+							var actualDate = new Date();
+							mcServerApi.insertRecord(mcServer['id'], {date: actualDate, memory: actualMemory});
 						})
-					}, 1300)
+					}, 1000);
+
+					var serverLoad = setInterval(function () {
+						task.procStat(mcServer['pid'], function (err, data) { 
+							var memory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
+							io.in(mcServer['id']).emit('serverLoad', {memoryUsage: memory});
+						})
+					}, 1300);
+
 
 					mcServer.on('exit', function (code, signal) {
 						clearInterval(serverLoad);
@@ -100,7 +120,7 @@ io
 			console.log('pushing data ' + data['command']);
 			checkIfExist(serverPool, 'id', data['id'], function (exist, index) {
 				if(exist) {
-					serverPool[index]['instance'].stdin.write(data['command'] + '\r');
+					serverPool[index]['stdin'].write(data['command'] + '\r');
 				} else {
 					socket.emit('fail', 'The server is not running');
 				}
@@ -130,12 +150,8 @@ io
 	}
 
 
-app
-	.use(bodyParser.urlencoded({extended:true}))
-	.use(morgan(':remote-addr :method :url'))
-	.use(servers)
-	.use(mcServer)
-	.use(express.static(__dirname + '/app'));
+
+
 
 server.listen('4000', function () {
 	console.log('Server up at 127.0.0.1:4000');
