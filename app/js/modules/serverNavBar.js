@@ -15,7 +15,7 @@ angular.module('adminApp.serverNavBar', ['ngRoute'])
 
 	.factory('serversInfo', function ($http, $q) {
 		return {
-			apiUrl: '/api/servers',
+			apiUrl: '/api/mcServer',
 			getAllServers: function () {
 				var deferred = $q.defer();
 				$http.get(this.apiUrl).success(function (data) {
@@ -24,6 +24,13 @@ angular.module('adminApp.serverNavBar', ['ngRoute'])
 				return deferred.promise;
 			},
 			getServerByID: function (id) {
+				var deferred = $q.defer();
+				$http.get(this.apiUrl + '/' + id).success(function (data) {
+					deferred.resolve(data);
+				});
+				return deferred.promise;
+			},
+			getServerLogByID: function (id) {
 				var deferred = $q.defer();
 				$http.get(this.apiUrl + '/' + id).success(function (data) {
 					deferred.resolve(data);

@@ -42,6 +42,31 @@ for (var i = serverPool.length - 1; i >= 0; i--) {
 };
 */
 
+var cpu = require('windows-cpu');
+
+// Find the total load for "chrome" processes
+
+setInterval(function () {
+	cpu.findLoad(1192, function(error, results) {
+		console.log('Google Chrome is currently using ' + results.load + '% of the cpu.');
+	})
+	console.log('a')
+}, 1000)
+ var a = new Date()
+ console.log(a)
+
+     // results =>
+     // {
+     //    load: 8,
+     //    found: [
+     //        { pid: 900, process: 'chrome', load: 4 },
+     //        { pid: 905, process: 'chrome#1', load: 0 },
+     //        { pid: 910, process: 'chrome#2', load: 4 }
+     //    ]
+     // }
+
+
+/*
 var fechas = [];
 
 fechas.push({time: Date.now(), memory: 400, cpu: 20});
@@ -62,6 +87,10 @@ var curr_month = d.getMonth();
 var curr_year = d.getFullYear();
 
 console.log(curr_date, curr_month, curr_year)
+*/
+
+
+
 
 /*
 function getUUID(name, callback) {

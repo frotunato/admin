@@ -9,15 +9,22 @@ var McServer = require('./mc-server-model');
 
 var insertRecord = function (id, record) {
 	var _id = mongoose.Types.ObjectId(id);
-	McServer.update(_id, { $push: { log: record } });
-	console.log(record)
+	McServer.update({ _id: id }, { $push: { log: record } }, { upsert: true} , function (err, n) {
+		if (err) {
+			throw err;
+		}
+	});
+	console.log('record is ' + JSON.stringify(record), 'added to ' + id);
+	getLog(id, function (data) {
+		console.log(JSON.stringify(data));
+	})
 }
 
 var getLog = function (id, callback) {
 	var _id = mongoose.Types.ObjectId(id);
 	McServer.findById(_id, 'log', function (err, data) {
 		callback(data);
-	})
+	});
 }
 
 app.use(router);
@@ -30,7 +37,7 @@ router.route('/api/mcServer')
 				res.send(err);
 			}
 			res.json(data);
-		})
+		});
 	})
 	
 	.post(function (req, res) {
@@ -45,7 +52,7 @@ router.route('/api/mcServer')
 		mcServer['bannedPlayers'] = req['body']['bannedPlayers'];
 
 		mcServer.save(function (err) {
-			if(err){
+			if(err) {
 				console.log(err);
 			}
 			res.json({message: 'Server created'});
@@ -69,6 +76,14 @@ router.route('/api/mcServer')
 			});
 		});
 
+	router.route('/api/mcServer/log/:_id')
+		.get(function (req, res) {
+			var _id = mongoose.Types.ObjectId(req['params']['_id']);
+			McServer.findById(_id, 'log', function (err, data) {
+				res.send(data);
+			});
+		});
+	
 	router.route('/api/mcServer/whitelist/:_id')
 		.get(function (req, res) {
 			var _id = mongoose.Types.ObjectId(req['params']['_id']);

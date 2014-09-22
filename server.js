@@ -4,19 +4,17 @@ var server = require('http').Server(app);
 var mongoose = require('mongoose');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
-var servers = require('./api/servers/servers.js');
 var mcServerApi = require('./api/mc-server/index.js');
-var chat = require('./api/chat/chat.js');
 var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
 var task = require('ms-task');
+var cpu = require('windows-cpu');
 
 mongoose.connect('mongodb://127.0.0.1:27017/Fortuna');
 
 app
 	.use(bodyParser.urlencoded({extended:true}))
 	.use(morgan(':remote-addr :method :url'))
-	.use(servers)
 	.use(mcServerApi)
 	.use(express.static(__dirname + '/app'));
 
@@ -28,10 +26,6 @@ io
 		console.log('SOCKET CONNECTION ESTABLISHED');
 		var room = null;
 		var mensaje = 'hola';
-		
-		mcServerApi.getLog('5406241dd51f18600621c916', function (data) {
-			console.log(data);
-		})
 
 		socket.on('pushClientRoom', function (data) {
 			if(room) {
@@ -75,30 +69,35 @@ io
 					}, 1300);
 
 					var chart = setInterval(function () {
+
 						task.procStat(mcServer['pid'], function (err, data) { 
-							console.log('a')
 							var actualMemory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
 							var actualDate = new Date();
-							mcServerApi.insertRecord(mcServer['id'], {date: actualDate, memory: actualMemory});
-						})
-					}, 1000);
+							cpu.findLoad(mcServer['pid'], function (err, data) {
+								var actualProcessor = data.load;
+							  mcServerApi.insertRecord(mcServer['id'], {date: actualDate, memory: actualMemory, processor: actualProcessor});
+								io.in(mcServer['id']).emit('chartUpdate', {date: actualDate, memory: actualMemory, processor: actualProcessor});
+							});		
+						});
+					}, 300000);
 
 					var serverLoad = setInterval(function () {
 						task.procStat(mcServer['pid'], function (err, data) { 
-							var memory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
-							io.in(mcServer['id']).emit('serverLoad', {memoryUsage: memory});
-						})
+					 		actualMemory = data.object[0].memUsage.replace('.', '').replace(' KB', '');
+							io.in(mcServer['id']).emit('serverLoad', {memory: actualMemory});
+						});
 					}, 1300);
 
 
 					mcServer.on('exit', function (code, signal) {
 						clearInterval(serverLoad);
+						clearInterval(chart);
 						serverPool.splice(index);
 						setTimeout(function () {
 							io.in(mcServer['id']).emit('getServerStatus', {status: 'Offline'});
 						}, 1300);
 						console.log('server died with code ' + code + " and signal " + signal);
-					})
+					});
 
 					roomMessages.push({room: data['room'], messages: []});
 					
@@ -111,7 +110,7 @@ io
 
 					mcServer.stderr.on('data', function (stderr) {
 						io.in(mcServer['id']).emit('pullChatData', "" + stderr);
-					})
+					});
 				}
 			});
 		});

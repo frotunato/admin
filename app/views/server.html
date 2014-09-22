@@ -18,18 +18,27 @@
 					<button style="width:80px;" class="btn btn-success" ng-bind="$parent.serverStatus" ng-model="$parent.serverStatus" ng-click="$parent.stopServer()"></button>
 				</div>
 			<p>
-				<div class="row">
-					
+				<div class="row">		
 					<progressbar max="max" value="dynamic">
-						<span style="color:black; white-space:nowrap;">{{dynamic}} MB / {{max}} MB</span>
+						<span style="color:black; white-space:wrap;">{{dynamic}} MB / {{max}} MB</span>
 					</progressbar>
 				</div>
 			</p>
+				
 				<div ng-controller="chartCtrl">
+				  <button class="btn btn-default" ng-click="isCollapsed = !isCollapsed">Chart settings</button>
+				  	<div collapse="!isCollapsed">
+					  	<h4>Chart type</h4>
+					  	<select ng-options="chartType.value as chartType.name for chartType in chartTypes" ng-model="options.series[0].type">
+				  		</select>				  	
+				  		<h4>Dots</h4>
+				  		<input type="checkbox" ng-model="options.drawDots">
 
-				    <linechart style="height:700;width:1200px;" data="data" options="options" mode=""></linechart>
+				  	</div>
 
-				  </div>
+				  <linechart style="height:700;width:1200px;" data="chartData" options="options" mode=""></linechart>
+				  
+				 </div>
 
 			</div>
 		</p>
